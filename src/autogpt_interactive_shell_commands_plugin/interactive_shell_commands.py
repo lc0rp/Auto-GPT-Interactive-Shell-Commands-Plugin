@@ -3,6 +3,7 @@ import os
 import subprocess
 from pathlib import Path
 import sys
+import select
 
 from autogpt.config import Config
 from autogpt.logs import logger
@@ -10,24 +11,15 @@ from autogpt.logs import logger
 CFG = Config()
 
 
-def execute_interactive_shell(command_line: str) -> str:
+def execute_interactive_shell(command_line: str) -> list[dict]:
     """Execute a shell command that requires interactivity and return the output
 
     Args:
         command_line (str): The command line to execute
 
     Returns:
-        str: The output of the command
+        list[dict]: The interaction between the user and the process, as a list of dictionaries: [{role: "user"|"process"|"error", content: "the content of the interaction"}, ...]
     """
-    current_dir = Path.cwd()
-    # Change dir into workspace if necessary
-    if not current_dir.is_relative_to(CFG.workspace_path):
-        os.chdir(CFG.workspace_path)
-
-    logger.info(
-        f"Executing command '{command_line}' in working directory '{Path.cwd()}'"
-    )
-
     process = subprocess.Popen(
         command_line,
         shell=True,
@@ -36,29 +28,37 @@ def execute_interactive_shell(command_line: str) -> str:
         stderr=subprocess.PIPE,
     )
 
-    def read_output(pipe):
-        while True:
-            byte_output = pipe.readline()
-            if byte_output == b"":
-                break
-            output = byte_output.decode("utf-8")
-            eof_sequence = "\x04"  # Enter this sequence to terminate user input
+    # To capture the conversation, we'll read from one set of descriptors, save the output and write it to the other set descriptors.
+    fd_map = {
+        process.stdout.fileno(): ("process", sys.stdout.buffer),
+        process.stderr.fileno(): ("error", sys.stderr.buffer),
+        sys.stdin.fileno(): ("user", process.stdin),  # Already buffered
+    }
 
-            sys.stdout.write(output)
-            if EOFError(eof_sequence):  # Use EOFError here
-                user_input = os.read(sys.stdin.fileno(), 1024)
-                process.stdin.write(user_input)
-                process.stdin.flush()
+    conversation = []
 
-    read_output(process.stdout)
-    read_output(process.stderr)
-    result = process.communicate()
+    while True:
+        read_fds, _, _ = select.select(list(fd_map.keys()), [], [])
+        input_fd = next(fd for fd in read_fds if fd in fd_map)
+        role, output_buffer = fd_map[input_fd]
 
-    # Change back to the prior working dir
-    os.chdir(current_dir)
+        input_buffer = os.read(input_fd, 1024)
+        if input_buffer == b"":
+            break
+        output_buffer.write(input_buffer)
+        output_buffer.flush()
+        content = input_buffer.decode("utf-8")
+        content = (
+            content.replace("\r", "").replace("\n", " ").strip() if content else ""
+        )
+        conversation.append({"role": role, "content": content})
 
-    output = f"STDOUT:\n{result[0]}\nSTDERR:\n{result[1]}"
-    return output
+    process.wait()
+    process.stdin.close()
+    process.stdout.close()
+    process.stderr.close()
+
+    return conversation
 
 
 def ask_user(prompts: list[str]) -> list[str]:
