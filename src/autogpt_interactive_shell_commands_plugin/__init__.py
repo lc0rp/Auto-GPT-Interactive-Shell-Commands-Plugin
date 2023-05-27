@@ -27,7 +27,7 @@ class AutoGPTInteractiveShellCommandsPlugin(AutoGPTPluginTemplate):
         """Initialize the plugin."""
         super().__init__()
         self._name = "Auto-GPT-Interactive-Shell-Commands-Plugin"
-        self._version = "0.2.0"
+        self._version = "0.3.0"
         self._description = f"This plugin allows Auto-GPT to execute interactive shell commands and get feedback from the user."
 
     def post_prompt(self, prompt: PromptGenerator) -> PromptGenerator:
