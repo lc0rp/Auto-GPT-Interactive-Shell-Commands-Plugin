@@ -5,8 +5,9 @@ Build by @lcOrp on github & @lc0rp#0081 on discord
 For support: discord...
 """
 import os
+from typing import Any, Dict, List, Optional, Tuple, TypedDict, TypeVar
+
 from auto_gpt_plugin_template import AutoGPTPluginTemplate
-from typing import Any, Dict, List, Optional, Tuple, TypeVar, TypedDict
 
 PromptGenerator = TypeVar("PromptGenerator")
 
@@ -27,8 +28,13 @@ class AutoGPTInteractiveShellCommandsPlugin(AutoGPTPluginTemplate):
         """Initialize the plugin."""
         super().__init__()
         self._name = "Auto-GPT-Interactive-Shell-Commands-Plugin"
-        self._version = "0.2.0"
+        self._version = "0.3.0"
         self._description = f"This plugin allows Auto-GPT to execute interactive shell commands and get feedback from the user."
+
+        # Default timeout in seconds (15 minutes)
+        self._default_timeout_seconds = os.getenv(
+            "INTERACTIVE_SHELL_DEFAULT_TIMEOUT_SECONDS", 900
+        )
 
     def post_prompt(self, prompt: PromptGenerator) -> PromptGenerator:
         """
@@ -41,19 +47,32 @@ class AutoGPTInteractiveShellCommandsPlugin(AutoGPTPluginTemplate):
         Returns:
             PromptGenerator: The prompt generator.
         """
-        from .interactive_shell_commands import execute_interactive_shell, ask_user
+        from .interactive_shell_commands import InteractiveShellCommands
+
+        is_commands = InteractiveShellCommands(
+            default_timeout_seconts=self._default_timeout_seconds
+        )
+
+        execute_interactive_shell = is_commands.execute_interactive_shell
+        ask_user = is_commands.ask_user
 
         prompt.add_command(
             "execute_interactive_shell",
             "Execute interactive shell command.",
-            {"command_line": "<command_line>"},
+            {
+                "command_line": "<command_line>",
+                "timeout_seconds": "<timeout_seconds_optional>",
+            },
             execute_interactive_shell,
         )
 
         prompt.add_command(
             "ask_user",
             "Ask user for input.",
-            {"prompts": "<list: prompts>"},
+            {
+                "prompts": "<list: prompts>",
+                "timeout_seconds": "<timeout_seconds_optional>",
+            },
             ask_user,
         )
 
