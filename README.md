@@ -7,8 +7,10 @@ This plugin allows Auto-GPT to execute interactive shell commands and get feedba
 
 ## <u>Commands</u>
 
-1. **ask_user**: With this command, Auto-GPT can ask the user questions. The command takes a list of questions, and an optional timeout, and returns a list of answers.
-2. **execute_interactive_shell**: Enables Auto-GPT to execute shell commands, with interactivity. It takes a command, and optional timeout, and returns the interactions between the user and the process, as a list of dictionaries: [{role: "user"|"process"|"error", content: "the content of the interaction"}, ...]
+1. **ask_user**: 
+    - With this command, Auto-GPT can ask the user questions. The command takes a list of questions, and an optional timeout, and returns a list of answers.
+2. **execute_interactive_shell**:
+    - Enables Auto-GPT to execute shell commands, with interactivity. It takes a command, and optional timeout, and returns the interactions between the user and the process, as a list of dictionaries: [{role: "user"|"process"|"error", content: "the content of the interaction"}, ...]
 
 ## <u>Timeout Configuration</u>
 
