@@ -131,3 +131,7 @@ def ask_user(prompts: list[str]) -> list[str]:
         response = input(prompt)
         results.append(response)
     return results
+
+print("Starting")
+output = execute_interactive_shell_new("python test.py")
+print(output)
