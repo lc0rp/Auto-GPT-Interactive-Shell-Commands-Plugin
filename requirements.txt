@@ -9,6 +9,7 @@ build
 twine
 auto_gpt_plugin_template
 sarge
+inputimeout
 
 # Testing
 pytest
