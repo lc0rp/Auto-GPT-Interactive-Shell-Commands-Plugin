@@ -1,12 +1,17 @@
 """Execute interactive shell commands in the workspace"""
 import os
+import socket
 import subprocess
 import sys
 import select
 
-from autogpt.config import Config
+# from autogpt.config import Config
 
-CFG = Config()
+# CFG = Config()
+
+
+def read_input():
+    return os.read(sys.stdin.fileno(), 1024)
 
 
 def execute_interactive_shell(command_line: str) -> list[dict]:
