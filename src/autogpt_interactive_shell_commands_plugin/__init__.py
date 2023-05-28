@@ -2,7 +2,7 @@
 This plugin allows Auto-GPT to execute interactive shell commands and get feedback from the user."
 
 Build by @lcOrp on github & @lc0rp#0081 on discord
-For support: discord...
+For help and discussion: https://discord.com/channels/1092243196446249134/1109480174321414214
 """
 import os
 from typing import Any, Dict, List, Optional, Tuple, TypedDict, TypeVar
@@ -29,12 +29,19 @@ class AutoGPTInteractiveShellCommandsPlugin(AutoGPTPluginTemplate):
         super().__init__()
         self._name = "Auto-GPT-Interactive-Shell-Commands-Plugin"
         self._version = "0.3.0"
-        self._description = f"This plugin allows Auto-GPT to execute interactive shell commands and get feedback from the user."
+        self._description = f"This plugin allows Auto-GPT to execute interactive shell commands and get feedback from the user. For help and discussion: https://discord.com/channels/1092243196446249134/1109480174321414214"
 
         # Default timeout in seconds (15 minutes)
         self._default_timeout_seconds = os.getenv(
             "INTERACTIVE_SHELL_DEFAULT_TIMEOUT_SECONDS", 900
         )
+
+        # Print out a summary of the settings
+        print(
+            f"Auto-GPT Interactive Shell Commands Plugin Settings (v {self._version}):"
+        )
+        print("=====================================================================")
+        print(f" - Default Timeout: {self._default_timeout_seconds} seconds")
 
     def post_prompt(self, prompt: PromptGenerator) -> PromptGenerator:
         """
@@ -50,7 +57,7 @@ class AutoGPTInteractiveShellCommandsPlugin(AutoGPTPluginTemplate):
         from .interactive_shell_commands import InteractiveShellCommands
 
         is_commands = InteractiveShellCommands(
-            default_timeout_seconts=self._default_timeout_seconds
+            default_timeout_seconds=self._default_timeout_seconds
         )
 
         execute_interactive_shell = is_commands.execute_interactive_shell

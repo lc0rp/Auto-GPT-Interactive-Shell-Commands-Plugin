@@ -36,6 +36,6 @@ In PowerShell:
 Invoke-WebRequest -Uri "https://github.com/lc0rp/Auto-GPT-Interactive-Shell-Commands-Plugin/archive/refs/heads/master.zip" -OutFile "./plugins/Auto-GPT-Interactive-Shell-Commands-Plugin.zip"
 ```
 
-## Feedback/Support
+## Help and discussion:
 
-Discord: https://discord.com/channels/1092243196446249134/1109480174321414214
+Discord: https://discord.com/channels/1092243196446249134/1109480174321414214"
