@@ -13,34 +13,40 @@ PromptGenerator = TypeVar("PromptGenerator")
 
 
 class Message(TypedDict):
+    """Message type."""
+
     role: str
     content: str
 
 
 class AutoGPTInteractiveShellCommandsPlugin(AutoGPTPluginTemplate):
     """
-    Interactive Shell Commands allows Auto-GPT to execute interactive shell commands and get feedback from the user."
+    Interactive Shell Commands allows Auto-GPT to execute interactive shell commands and get
+    feedback from the user."
 
     Build by @lcOrp on github.
     """
-
+    
+    # Default timeout in seconds (15 minutes)
+    _default_timeout_seconds: int = 900
+    
     def __init__(self):
         """Initialize the plugin."""
         super().__init__()
         self._name = "Auto-GPT-Interactive-Shell-Commands-Plugin"
-        self._version = "0.3.0"
-        self._description = f"This plugin allows Auto-GPT to execute interactive shell commands and get feedback from the user. For help and discussion: https://discord.com/channels/1092243196446249134/1109480174321414214"
+        self._version = "0.3.1"
+        self._description = (
+            "This plugin allows Auto-GPT to execute interactive shell commands and get feedback"
+            "from the user. For help and discussion: "
+            "https://discord.com/channels/1092243196446249134/1109480174321414214"
+        )
 
         # Default timeout in seconds (15 minutes)
-        self._default_timeout_seconds = os.getenv(
-            "INTERACTIVE_SHELL_DEFAULT_TIMEOUT_SECONDS", 900
-        )
+        self._default_timeout_seconds = os.getenv("INTERACTIVE_SHELL_DEFAULT_TIMEOUT_SECONDS", self._default_timeout_seconds)
 
         # Print out a summary of the settings
-        print(
-            f"Auto-GPT Interactive Shell Commands Plugin Settings (v {self._version}):"
-        )
-        print("=====================================================================")
+        print(f"Interactive Shell Commands Plugin Settings (v {self._version}):")
+        print("=================================================================")
         print(f" - Default Timeout: {self._default_timeout_seconds} seconds")
 
     def post_prompt(self, prompt: PromptGenerator) -> PromptGenerator:
@@ -105,7 +111,6 @@ class AutoGPTInteractiveShellCommandsPlugin(AutoGPTPluginTemplate):
 
     def on_response(self, response: str, *args, **kwargs) -> Optional[str]:
         """This method is called when a response is received from the model."""
-        pass
 
     def can_handle_on_planning(self) -> bool:
         """
@@ -235,7 +240,7 @@ class AutoGPTInteractiveShellCommandsPlugin(AutoGPTPluginTemplate):
             Tuple[str, Dict[str, Any]]: The command name and the arguments.
         """
         # Return "write_to_file" => settings file
-        pass
+        return command_name, arguments
 
     def can_handle_post_command(self) -> bool:
         """
@@ -257,7 +262,7 @@ class AutoGPTInteractiveShellCommandsPlugin(AutoGPTPluginTemplate):
         Returns:
             str: The resulting response.
         """
-        pass
+        return response
 
     def can_handle_chat_completion(
         self, messages: Dict[Any, Any], model: str, temperature: float, max_tokens: int
@@ -290,5 +295,60 @@ class AutoGPTInteractiveShellCommandsPlugin(AutoGPTPluginTemplate):
 
         Returns:
             str: The resulting response.
+        """
+
+    def can_handle_text_embedding(self, text: str) -> bool:
+        """This method is called to check that the plugin can
+          handle the text_embedding method.
+        Args:
+            text (str): The text to be convert to embedding.
+          Returns:
+              bool: True if the plugin can handle the text_embedding method."""
+        return False
+
+    def handle_text_embedding(self, text: str) -> list:
+        """This method is called when the chat completion is done.
+        Args:
+            text (str): The text to be convert to embedding.
+        Returns:
+            list: The text embedding.
+        """
+        pass
+
+    def can_handle_user_input(self, user_input: str) -> bool:
+        """This method is called to check that the plugin can
+        handle the user_input method.
+
+        Args:
+            user_input (str): The user input.
+
+        Returns:
+            bool: True if the plugin can handle the user_input method."""
+        return False
+
+    def user_input(self, user_input: str) -> str:
+        """This method is called to request user input to the user.
+
+        Args:
+            user_input (str): The question or prompt to ask the user.
+
+        Returns:
+            str: The user input.
+        """
+        pass
+
+    def can_handle_report(self) -> bool:
+        """This method is called to check that the plugin can
+        handle the report method.
+
+        Returns:
+            bool: True if the plugin can handle the report method."""
+        return False
+
+    def report(self, message: str) -> None:
+        """This method is called to report a message to the user.
+
+        Args:
+            message (str): The message to report.
         """
         pass
