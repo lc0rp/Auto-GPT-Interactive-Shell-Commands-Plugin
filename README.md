@@ -4,6 +4,10 @@
 
 This plugin allows Auto-GPT to execute interactive shell commands and get feedback from the user.
 
+# Status - Deprecated
+
+These features or similar ones are now available in Auto-GPT. This repo will be archived soon. 
+
 
 ## <u>Commands</u>
 
